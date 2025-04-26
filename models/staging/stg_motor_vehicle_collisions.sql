@@ -5,7 +5,7 @@ SELECT
   collision_id,
 
   -- Date & Time
-  TIMESTAMP(crash_date) AS crash_datetime,
+  DATE(crash_date) AS crash_date,
   crash_time,
 
   -- Location fields
@@ -28,11 +28,11 @@ SELECT
   number_of_motorist_killed AS killed_motorists,
 
   -- Contributing factors (for bridge table)
-  contributing_factor_vehicle_1,
-  contributing_factor_vehicle_2,
-  contributing_factor_vehicle_3,
-  contributing_factor_vehicle_4,
-  contributing_factor_vehicle_5,
+  INITCAP(COALESCE(contributing_factor_vehicle_1, 'Unspecified')) AS contributing_factor_vehicle_1,
+  INITCAP(COALESCE(contributing_factor_vehicle_2, 'Unspecified')) AS contributing_factor_vehicle_2,
+  INITCAP(COALESCE(contributing_factor_vehicle_3, 'Unspecified')) AS contributing_factor_vehicle_3,
+  INITCAP(COALESCE(contributing_factor_vehicle_4, 'Unspecified')) AS contributing_factor_vehicle_4,
+  INITCAP(COALESCE(contributing_factor_vehicle_5, 'Unspecified')) AS contributing_factor_vehicle_5,
 
   -- Vehicle types (for bridge table)
   vehicle_type_code1,
