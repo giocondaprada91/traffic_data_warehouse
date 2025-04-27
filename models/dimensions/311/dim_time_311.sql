@@ -2,16 +2,16 @@
 
 WITH base AS (
   SELECT DISTINCT
-    closed_date
+    closed_time
   FROM {{ ref('stg_traffic_signal_311') }}
-  WHERE closed_date IS NOT NULL
+  WHERE closed_time IS NOT NULL
 ),
 
 parsed_times AS (
   SELECT
-    SAFE.PARSE_TIME('%H:%M', closed_date) AS parsed_time
+    SAFE.PARSE_TIME('%H:%M:%S', closed_time) AS parsed_time
   FROM base
-  WHERE closed_date != ''
+  WHERE closed_time != ''
 )
 
 SELECT
