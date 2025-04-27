@@ -2,16 +2,23 @@
 
 WITH base AS (
   SELECT DISTINCT
-    closed_time
+    created_time AS time_value
+  FROM {{ ref('stg_traffic_signal_311') }}
+  WHERE created_time IS NOT NULL
+
+  UNION DISTINCT
+
+  SELECT DISTINCT
+    closed_time AS time_value
   FROM {{ ref('stg_traffic_signal_311') }}
   WHERE closed_time IS NOT NULL
 ),
 
 parsed_times AS (
   SELECT
-    SAFE.PARSE_TIME('%H:%M:%S', closed_time) AS parsed_time
+    SAFE.PARSE_TIME('%H:%M:%S', time_value) AS parsed_time
   FROM base
-  WHERE closed_time != ''
+  WHERE time_value != ''
 )
 
 SELECT
