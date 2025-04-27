@@ -44,6 +44,7 @@ SELECT
   location,  -- raw location object from JSON
   
   -- Park info
+  INITCAP(facility_type) AS facility_type,
   INITCAP(park_facility_name) AS park_facility_name,
   INITCAP(park_borough) AS park_borough,
   
