@@ -13,8 +13,8 @@ WITH base AS (
     INITCAP(cross_street_1) AS cross_street_1,
     INITCAP(cross_street_2) AS cross_street_2,
     CAST(bbl AS STRING) AS bbl,
-    CAST(latitude AS FLOAT64) AS latitude,
-    CAST(longitude AS FLOAT64) AS longitude,
+    SAFE_CAST(latitude AS FLOAT64) AS latitude,  -- ✅ safer for bad data
+    SAFE_CAST(longitude AS FLOAT64) AS longitude,
     location,
     INITCAP(community_board) AS community_board
   FROM {{ ref('stg_traffic_signal_311') }}
@@ -58,9 +58,9 @@ SELECT
   GENERATE_UUID() AS location_id,
   borough,
   city,
-  incident_zip,
-  intersection_1,
-  intersection_2,
+  incident_zip AS zip_code,               -- ✅ renamed
+  intersection_1 AS on_street_name,       -- ✅ renamed
+  intersection_2 AS cross_street_name,    -- ✅ renamed
   address_type,
   incident_address,
   street_name,
@@ -79,9 +79,9 @@ SELECT
   GENERATE_UUID() AS location_id,
   borough,
   city,
-  incident_zip,
-  intersection_1,
-  intersection_2,
+  incident_zip AS zip_code,               -- ✅ renamed
+  intersection_1 AS on_street_name,       -- ✅ renamed
+  intersection_2 AS cross_street_name,    -- ✅ renamed
   address_type,
   incident_address,
   street_name,

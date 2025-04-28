@@ -7,8 +7,8 @@ WITH base AS (
     INITCAP(on_street_name) AS on_street_name,
     INITCAP(cross_street_name) AS cross_street_name,
     INITCAP(off_street_name) AS off_street_name,
-    CAST(latitude AS FLOAT64) AS latitude,
-    CAST(longitude AS FLOAT64) AS longitude
+    SAFE_CAST(latitude AS FLOAT64) AS latitude,     
+    SAFE_CAST(longitude AS FLOAT64) AS longitude 
   FROM {{ ref('stg_motor_vehicle_collisions') }}
   WHERE borough IS NOT NULL
     OR zip_code IS NOT NULL
