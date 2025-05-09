@@ -28,27 +28,31 @@ join_time AS (
     ON SAFE_CAST(FORMAT_TIMESTAMP('%H%M', jd.crash_timestamp) AS INT64) = t.time_id
 ),
 
--- Join to dim_location (loose matching: borough OR zip OR street)
+-- Join to dim_location using OR logic in priority order
 join_location AS (
   SELECT
     jt.*,
     l.location_id
   FROM join_time jt
   LEFT JOIN {{ ref('dim_location_collisions') }} l
-    ON (
-      (COALESCE(INITCAP(jt.borough), 'UNKNOWN') = l.borough)
-      OR (COALESCE(LPAD(CAST(jt.zip_code AS STRING), 5, '0'), '00000') = l.zip_code)
-      OR (INITCAP(jt.on_street_name) = l.on_street_name)
-    )
+    ON
+      SAFE_CAST(jt.latitude AS FLOAT64) = l.latitude OR
+      SAFE_CAST(jt.longitude AS FLOAT64) = l.longitude OR
+      INITCAP(jt.on_street_name) = l.on_street_name OR
+      INITCAP(jt.cross_street_name) = l.cross_street_name OR
+      INITCAP(jt.off_street_name) = l.off_street_name OR
+      LPAD(CAST(jt.zip_code AS STRING), 5, '0') = l.zip_code OR
+      INITCAP(jt.borough) = l.borough
 )
 
+-- Final output
 SELECT
   SAFE_CAST(jl.collision_id AS STRING) AS collision_id,
 
   -- Dimension keys
   jl.date_id,
   jl.time_id,
-  jl.location_id,
+  COALESCE(jl.location_id, 'UNKNOWN') AS location_id,
 
   -- Measures
   COALESCE(jl.injured_persons, 0) AS injured_persons,
@@ -62,4 +66,3 @@ SELECT
 
 FROM join_location jl
 WHERE jl.collision_id IS NOT NULL
-
